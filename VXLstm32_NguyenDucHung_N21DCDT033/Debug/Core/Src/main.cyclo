@@ -1,0 +1,10 @@
+../Core/Src/main.c:130:9:Read_Temperature	3
+../Core/Src/main.c:81:5:main	12
+../Core/Src/main.c:228:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:239:6:SystemClock_Config	3
+../Core/Src/main.c:285:13:MX_ADC1_Init	4
+../Core/Src/main.c:353:13:MX_LPUART1_UART_Init	5
+../Core/Src/main.c:400:13:MX_USART1_UART_Init	5
+../Core/Src/main.c:448:13:MX_TIM1_Init	4
+../Core/Src/main.c:495:13:MX_GPIO_Init	1
+../Core/Src/main.c:548:6:Error_Handler	1
