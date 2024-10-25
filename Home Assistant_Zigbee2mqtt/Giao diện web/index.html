@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạng Thái Công Tắc</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            height: 100vh; /* Chiều cao 100% màn hình */
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Căn giữa văn bản */
+            width: 300px; /* Chiều rộng tối đa */
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center; /* Căn giữa theo chiều dọc */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            margin: 15px 0; /* Khoảng cách giữa các hàng */
+        }
+
+        .switch-label {
+            margin-right: 10px; /* Khoảng cách giữa nhãn và nút trượt */
+            font-weight: bold; /* Làm cho nhãn đậm hơn */
+        }
+
+        .switch {
+            position: relative;
+            width: 60px; 
+            height: 34px;
+            -webkit-appearance: none;
+            background: #ccc;
+            border-radius: 34px;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Thay đổi tốc độ chuyển động */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .switch:checked {
+            background: #4CAF50; /* Màu xanh khi bật */
+        }
+
+        .switch:checked::before {
+            transform: translateX(26px);
+            background: white; /* Đặt màu nền cho hình tròn khi bật */
+        }
+
+        .switch::before {
+            content: "";
+            position: absolute;
+            width: 34px; /* Chiều rộng hình tròn */
+            height: 34px; /* Chiều cao hình tròn */
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease; /* Thay đổi tốc độ chuyển động */
+            left: 0; /* Đặt hình tròn vào bên trái */
+        }
+
+        .switch-status {
+            font-weight: normal;
+            font-size: 16px;
+        }
+
+        .switch-status.off {
+            color: red; /* Màu đỏ khi tắt */
+        }
+
+        .switch-status.on {
+            color: green; /* Màu xanh khi bật */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trạng Thái Công Tắc</h1>
+
+        <div class="switch-container">
+            <span class="switch-label">Công tắc 1</span>
+            <input type="checkbox" id="switch1" class="switch" onchange="toggleSwitch(1)">
+            <span id="switch1-status" class="switch-status">Loading...</span>
+        </div>
+
+        <div class="switch-container">
+            <span class="switch-label">Công tắc 2</span>
+            <input type="checkbox" id="switch2" class="switch" onchange="toggleSwitch(2)">
+            <span id="switch2-status" class="switch-status">Loading...</span>
+        </div>
+
+        <div class="switch-container">
+            <span class="switch-label">Công tắc 3</span>
+            <input type="checkbox" id="switch3" class="switch" onchange="toggleSwitch(3)">
+            <span id="switch3-status" class="switch-status">Loading...</span>
+        </div>
+
+        <div class="switch-container">
+            <span class="switch-label">Công tắc 4</span>
+            <input type="checkbox" id="switch4" class="switch" onchange="toggleSwitch(4)">
+            <span id="switch4-status" class="switch-status">Loading...</span>
+        </div>
+
+        <h2>Dữ liệu cảm biến</h2>
+        <p id="pressure-status">Đang tải áp suất...</p>
+        <p id="humidity-status">Đang tải độ ẩm...</p>
+        <p id="temperature-status">Đang tải nhiệt độ...</p>
+    </div>
+
+    <script>
+        function updateSwitchStates() {
+            getSwitchState1();
+            getSwitchState2();
+            getSwitchState3();
+            getSwitchState4();
+            getPressure();
+            getHumidity();
+            getTemperature();
+        }
+
+        function toggleSwitch(switchNumber) {
+            const action = $(`#switch${switchNumber}`).is(':checked') ? 'on' : 'off';
+            $.post(`/turn_${action}_switch/${switchNumber}`, function(data) {
+                if (data.error) {
+                    console.error('Error: ' + data.error);
+                }
+            });
+            updateSwitchStates();
+        }
+
+        function getSwitchState1() {
+            $.get('/get_switch_state1', function(data) {
+                if (data.error) {
+                    $('#switch1-status').text('Error: ' + data.error);
+                } else {
+                    $('#switch1').prop('checked', data.state === 'on');
+                    $('#switch1-status').text('Công tắc 1: ' + data.state).removeClass().addClass('switch-status ' + (data.state === 'on' ? 'on' : 'off'));
+                }
+            });
+        }
+
+        function getSwitchState2() {
+            $.get('/get_switch_state2', function(data) {
+                if (data.error) {
+                    $('#switch2-status').text('Error: ' + data.error);
+                } else {
+                    $('#switch2').prop('checked', data.state === 'on');
+                    $('#switch2-status').text('Công tắc 2: ' + data.state).removeClass().addClass('switch-status ' + (data.state === 'on' ? 'on' : 'off'));
+                }
+            });
+        }
+
+        function getSwitchState3() {
+            $.get('/get_switch_state3', function(data) {
+                if (data.error) {
+                    $('#switch3-status').text('Error: ' + data.error);
+                } else {
+                    $('#switch3').prop('checked', data.state === 'on');
+                    $('#switch3-status').text('Công tắc 3: ' + data.state).removeClass().addClass('switch-status ' + (data.state === 'on' ? 'on' : 'off'));
+                }
+            });
+        }
+
+        function getSwitchState4() {
+            $.get('/get_switch_state4', function(data) {
+                if (data.error) {
+                    $('#switch4-status').text('Error: ' + data.error);
+                } else {
+                    $('#switch4').prop('checked', data.state === 'on');
+                    $('#switch4-status').text('Công tắc 4: ' + data.state).removeClass().addClass('switch-status ' + (data.state === 'on' ? 'on' : 'off'));
+                }
+            });
+        }
+
+        function getPressure() {
+            $.get('/get_pressure', function(data) {
+                if (data.error) {
+                    $('#pressure-status').text('Error: ' + data.error);
+                } else {
+                    $('#pressure-status').text('Áp suất: ' + data.state);
+                }
+            });
+        }
+
+        function getHumidity() {
+            $.get('/get_humidity', function(data) {
+                if (data.error) {
+                    $('#humidity-status').text('Error: ' + data.error);
+                } else {
+                    $('#humidity-status').text('Độ ẩm: ' + data.state);
+                }
+            });
+        }
+
+        function getTemperature() {
+            $.get('/get_temperature', function(data) {
+                if (data.error) {
+                    $('#temperature-status').text('Error: ' + data.error);
+                } else {
+                    $('#temperature-status').text('Nhiệt độ: ' + data.state);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            updateSwitchStates();
+            setInterval(updateSwitchStates, 1000); // Cập nhật mỗi giây
+        });
+    </script>
+</body>
+</html>
